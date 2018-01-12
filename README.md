@@ -32,10 +32,10 @@ services:
     deploy:
       replicas: 2
       restart_policy:
-      condition: on-failure
+        condition: on-failure
 ```
 
-And then run `docker stack deploy -c runners.yml`
+And then run `docker stack deploy -c runners.yml runners`
 
 ## Note
 
