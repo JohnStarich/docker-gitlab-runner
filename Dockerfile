@@ -1,4 +1,4 @@
-FROM gitlab/gitlab-runner:alpine-v10.4.0
+FROM gitlab/gitlab-runner:alpine-v11.5.1
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["run", "--user=gitlab-runner", "--working-directory=/home/gitlab-runner"]
