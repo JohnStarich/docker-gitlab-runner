@@ -31,14 +31,22 @@ set -x
 set -m
 
 if [[ "$1" == 'run' ]]; then
-    gitlab-runner register -n \
-        --url "$GITLAB_CI_URL" \
-        --registration-token "$GITLAB_CI_TOKEN" \
-        --executor docker \
-        --description "$GITLAB_CI_DESCRIPTION" \
-        --docker-image "docker:latest" \
-        --docker-privileged \
-        --docker-volumes /var/run/docker.sock:/var/run/docker.sock
+    args=( --url "$GITLAB_CI_URL"
+        --registration-token "$GITLAB_CI_TOKEN"
+        --executor docker
+        --description "$GITLAB_CI_DESCRIPTION"
+        --docker-image "docker:latest"
+    )
+    if [[ -n "$DOCKER_PROXY_HOST" ]]; then
+        echo "Adding proxy host: $DOCKER_PROXY_HOST"
+        args+=(--env "DOCKER_HOST=$DOCKER_PROXY_HOST")
+    elif [[ -z "$DOCKER_HOST" ]]; then
+        echo "Making privileged runner with mounted docker socket"
+        args+=( --docker-privileged
+            --docker-volumes /var/run/docker.sock:/var/run/docker.sock
+        )
+    fi
+    gitlab-runner register -n "${args[@]}"
 fi
 
 # Run parent entrypoint as usual
